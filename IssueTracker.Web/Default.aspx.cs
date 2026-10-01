@@ -1,0 +1,126 @@
+﻿using IssueTracker.Core.Entities;
+using IssueTracker.Core.Interfaces;
+using Microsoft.Practices.Unity;
+using System;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using Unity.WebForms;
+
+namespace IssueTracker.Web
+{
+    public partial class Default : Page
+    {
+        [Dependency]
+        public IRepository<Issue> IssueRepository { get; set; }
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                BindGrid();
+            }
+        }
+        protected void Page_Init(object sender, EventArgs e)
+        {
+            // Resolve directly from Unity container if property injection is skipped
+            var container = HttpContext.Current.Application.GetContainer();
+            if (container != null)
+            {
+                IssueRepository = container.Resolve<IRepository<Issue>>();
+            }
+        }
+
+        private void BindGrid(string searchKeyword = "", string searchBy = "All")
+        {
+            if (IssueRepository == null) return;
+
+            var query = IssueRepository.Find(i => i.IsDeleted == 0).AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchKeyword))
+            {
+                searchKeyword = searchKeyword.Trim().ToLower();
+
+                switch (searchBy)
+                {
+                    case "Title":
+                        query = query.Where(i => i.Title != null && i.Title.ToLower().Contains(searchKeyword));
+                        break;
+                    case "Priority":
+                        query = query.Where(i => i.Priority != null && i.Priority.ToLower().Contains(searchKeyword));
+                        break;
+                    case "AssignedTo":
+                        query = query.Where(i => i.AssignedTo != null && i.AssignedTo.ToLower().Contains(searchKeyword));
+                        break;
+                    default:
+                        query = query.Where(i => (i.Title != null && i.Title.ToLower().Contains(searchKeyword)) ||
+                                                 (i.Priority != null && i.Priority.ToLower().Contains(searchKeyword)) ||
+                                                 (i.AssignedTo != null && i.AssignedTo.ToLower().Contains(searchKeyword)));
+                        break;
+                }
+            }
+
+            gvIssues.DataSource = query.OrderByDescending(i => i.IssueID).ToList();
+            gvIssues.DataBind();
+        }
+
+        protected void btnSearch_Click(object sender, EventArgs e)
+        {
+            BindGrid(txtSearch.Text, ddlSearchBy.SelectedValue);
+        }
+
+        protected void btnClear_Click(object sender, EventArgs e)
+        {
+            txtSearch.Text = string.Empty;
+            ddlSearchBy.SelectedIndex = 0;
+            BindGrid();
+        }
+
+        protected void btnSave_Click(object sender, EventArgs e)
+        {
+            int issueId = 0;
+            int.TryParse(hfIssueID.Value, out issueId);
+
+            if (issueId == 0)
+            {
+                var newIssue = new Issue
+                {
+                    Title = txtTitle.Text.Trim(),
+                    Description = txtDescription.Text.Trim(),
+                    Priority = string.IsNullOrEmpty(ddlPriority.SelectedValue) ? "Low" : ddlPriority.SelectedValue,
+                    AssignedTo = txtAssignedTo.Text.Trim(),
+                    CreatedDate = DateTime.Now,
+                    IsDeleted = 0
+                };
+
+                IssueRepository.Add(newIssue);
+            }
+            else
+            {
+                var existing = IssueRepository.GetById(issueId);
+                if (existing != null)
+                {
+                    existing.Title = txtTitle.Text.Trim();
+                    existing.Description = txtDescription.Text.Trim();
+                    existing.Priority = ddlPriority.SelectedValue;
+                    existing.AssignedTo = txtAssignedTo.Text.Trim();
+
+                    IssueRepository.Update(existing);
+                }
+            }
+
+            ClearForm();
+            BindGrid();
+        }
+
+        private void ClearForm()
+        {
+            hfIssueID.Value = string.Empty;
+            txtTitle.Text = string.Empty;
+            txtDescription.Text = string.Empty;
+            ddlPriority.SelectedIndex = 0;
+            txtAssignedTo.Text = string.Empty;
+            btnSave.Text = "Save Issue";
+        }
+    }
+}

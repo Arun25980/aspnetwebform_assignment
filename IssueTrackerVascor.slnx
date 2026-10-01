@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="IssueTracker.Core/IssueTracker.Core.csproj" Id="c844c9d4-b789-4d0d-a583-b336ca10a8be" />
+  <Project Path="IssueTracker.Data/IssueTracker.Data.csproj" Id="a6e6ceaf-af88-4753-891d-c733c98b7e0c" />
+  <Project Path="IssueTracker.Web/IssueTracker.Web.csproj" Id="0a9986e2-ec4b-48e8-a9b4-280415401e0e" />
+</Solution>

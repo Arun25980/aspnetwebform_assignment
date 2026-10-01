@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+	<edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+		<edmx:Diagrams>
+			<Diagram DiagramId="8ae6d7176f4747d9adcad152536b0aef" Name="Diagram1">
+				<EntityTypeShape EntityType="IssueTracker.Core.Entities.Issue" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+			</Diagram>
+		</edmx:Diagrams>
+	</edmx:Designer>
+</edmx:Edmx>

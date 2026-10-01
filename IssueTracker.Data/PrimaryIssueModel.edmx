@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+	<edmx:Runtime>
+		<!-- SSDL content -->
+		<edmx:StorageModels>
+			<Schema Namespace="PrimaryIssuesModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+				<EntityType Name="Issues">
+					<Key>
+						<PropertyRef Name="Id" />
+					</Key>
+					<Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+					<Property Name="Title" Type="nvarchar" MaxLength="100" Nullable="false" />
+					<Property Name="Description" Type="nvarchar(max)" />
+					<Property Name="Status" Type="nvarchar" MaxLength="50" />
+					<Property Name="Priority" Type="nvarchar" MaxLength="50" />
+					<Property Name="AssignedTo" Type="nvarchar" MaxLength="100" />
+					<Property Name="IsDeleted" Type="int" Nullable="false" />
+					<Property Name="CreatedDate" Type="datetime" />
+				</EntityType>
+				<EntityContainer Name="PrimaryIssuesModelStoreContainer">
+					<EntitySet Name="Issues" EntityType="Self.Issues" Schema="dbo" store:Type="Tables" />
+				</EntityContainer>
+			</Schema>
+		</edmx:StorageModels>
+
+		<!-- CSDL content -->
+		<edmx:ConceptualModels>
+			<Schema Namespace="IssueTracker.Core.Entities" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+				<EntityType Name="Issue">
+					<Key>
+						<PropertyRef Name="IssueID" />
+					</Key>
+					<Property Name="IssueID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+					<Property Name="Title" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+					<Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+					<Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+					<Property Name="Priority" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+					<Property Name="AssignedTo" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+					<Property Name="IsDeleted" Type="Int32" Nullable="false" />
+					<Property Name="CreatedDate" Type="DateTime" Precision="3" />
+				</EntityType>
+				<EntityContainer Name="PrimaryIssueEntities" annotation:LazyLoadingEnabled="true">
+					<EntitySet Name="Issues" EntityType="Self.Issue" />
+				</EntityContainer>
+			</Schema>
+		</edmx:ConceptualModels>
+
+		<!-- C-S mapping content -->
+		<edmx:Mappings>
+			<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+				<EntityContainerMapping StorageEntityContainer="PrimaryIssuesModelStoreContainer" CdmEntityContainer="PrimaryIssueEntities">
+					<EntitySetMapping Name="Issues">
+						<EntityTypeMapping TypeName="IssueTracker.Core.Entities.Issue">
+							<MappingFragment StoreEntitySet="Issues">
+								<ScalarProperty Name="IssueID" ColumnName="Id" />
+								<ScalarProperty Name="Title" ColumnName="Title" />
+								<ScalarProperty Name="Description" ColumnName="Description" />
+								<ScalarProperty Name="Status" ColumnName="Status" />
+								<ScalarProperty Name="Priority" ColumnName="Priority" />
+								<ScalarProperty Name="AssignedTo" ColumnName="AssignedTo" />
+								<ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+								<ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+							</MappingFragment>
+						</EntityTypeMapping>
+					</EntitySetMapping>
+				</EntityContainerMapping>
+			</Mapping>
+		</edmx:Mappings>
+	</edmx:Runtime>
+
+	<Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+		<Connection>
+			<DesignerInfoPropertySet>
+				<DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+			</DesignerInfoPropertySet>
+		</Connection>
+		<Options>
+			<DesignerInfoPropertySet>
+				<DesignerProperty Name="ValidateOnBuild" Value="true" />
+				<DesignerProperty Name="EnablePluralization" Value="true" />
+				<DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+				<DesignerProperty Name="UseLegacyProvider" Value="false" />
+				<DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+			</DesignerInfoPropertySet>
+		</Options>
+		<Diagrams></Diagrams>
+	</Designer>
+</edmx:Edmx>
