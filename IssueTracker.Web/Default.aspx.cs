@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
+using System.Web.UI.WebControls;
 using Unity.WebForms;
 
 namespace IssueTracker.Web
@@ -121,6 +122,44 @@ namespace IssueTracker.Web
             ddlPriority.SelectedIndex = 0;
             txtAssignedTo.Text = string.Empty;
             btnSave.Text = "Save Issue";
+        }
+        protected void gvIssues_RowCommand(object sender, GridViewCommandEventArgs e)
+        {
+            if (e.CommandName == "EditIssue")
+            {
+                int issueId = Convert.ToInt32(e.CommandArgument);
+                var issue = IssueRepository.GetById(issueId);
+
+                if (issue != null)
+                {
+                    hfIssueID.Value = issue.IssueID.ToString();
+                    txtTitle.Text = issue.Title;
+                    txtDescription.Text = issue.Description;
+
+                    if (ddlPriority.Items.FindByValue(issue.Priority) != null)
+                    {
+                        ddlPriority.SelectedValue = issue.Priority;
+                    }
+
+                    txtAssignedTo.Text = issue.AssignedTo;
+                    btnSave.Text = "Update Issue";
+                }
+            }
+            else if (e.CommandName == "DeleteIssue")
+            {
+                int issueId = Convert.ToInt32(e.CommandArgument);
+                var issue = IssueRepository.GetById(issueId);
+
+                if (issue != null)
+                {
+                    // Soft delete
+                    issue.IsDeleted = 1;
+                    IssueRepository.Update(issue);
+
+                    ClearForm();
+                    BindGrid(); // Re-bind grid to instantly reflect deletion
+                }
+            }
         }
     }
 }

@@ -10,7 +10,7 @@
 <body class="bg-light">
     <form id="form1" runat="server">
         <div class="container my-4">
-            
+
             <!-- Centered Form -->
             <div class="row justify-content-center mb-4">
                 <div class="col-md-8 col-lg-6">
@@ -88,16 +88,35 @@
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <!-- Cleaned GridView without OnRowCommand error -->
-                        <asp:GridView ID="gvIssues" runat="server" AutoGenerateColumns="False" DataKeyNames="IssueID"
-                            CssClass="table table-hover align-middle mb-0" GridLines="None">
-                            <HeaderStyle CssClass="table-light" />
+                        <asp:GridView ID="gvIssues" runat="server" AutoGenerateColumns="False"
+                            CssClass="table table-striped table-hover align-middle mb-0"
+                            DataKeyNames="IssueID" OnRowCommand="gvIssues_RowCommand">
                             <Columns>
-                                <asp:BoundField DataField="IssueID" HeaderText="ID" ItemStyle-Width="60px" />
+                                <asp:BoundField DataField="IssueID" HeaderText="ID" />
                                 <asp:BoundField DataField="Title" HeaderText="Title" />
                                 <asp:BoundField DataField="Description" HeaderText="Description" />
-                                <asp:BoundField DataField="Priority" HeaderText="Priority" ItemStyle-Width="100px" />
-                                <asp:BoundField DataField="AssignedTo" HeaderText="Assigned To" ItemStyle-Width="150px" />
-                                <asp:BoundField DataField="CreatedDate" HeaderText="Created Date" DataFormatString="{0:yyyy-MM-dd HH:mm}" ItemStyle-Width="160px" />
+                                <asp:BoundField DataField="Priority" HeaderText="Priority" />
+                                <asp:BoundField DataField="AssignedTo" HeaderText="Assigned To" />
+                                <asp:BoundField DataField="CreatedDate" HeaderText="Created Date" DataFormatString="{0:yyyy-MM-dd HH:mm}" />
+
+                                <%-- Actions Column --%>
+                                <asp:TemplateField HeaderText="Actions">
+                                    <ItemTemplate>
+                                        <asp:LinkButton ID="btnEdit" runat="server"
+                                            CommandName="EditIssue"
+                                            CommandArgument='<%# Eval("IssueID") %>'
+                                            CssClass="btn btn-sm btn-outline-primary me-1">
+                    Edit
+                                        </asp:LinkButton>
+                                        <asp:LinkButton ID="btnDelete" runat="server"
+                                            CommandName="DeleteIssue"
+                                            CommandArgument='<%# Eval("IssueID") %>'
+                                            CssClass="btn btn-sm btn-outline-danger"
+                                            OnClientClick="return confirm('Are you sure you want to delete this issue?');">
+                    Delete
+                                        </asp:LinkButton>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
                             </Columns>
                         </asp:GridView>
                     </div>
