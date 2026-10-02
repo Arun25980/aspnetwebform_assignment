@@ -1,3 +1,4 @@
+C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\NLog.config
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\IssueTracker.Web.dll.config
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\IssueTracker.Web.dll
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\IssueTracker.Web.pdb
@@ -60,6 +61,7 @@ C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\Microsoft.P
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\Microsoft.Practices.Unity.dll
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\Microsoft.Practices.Unity.RegistrationByConvention.dll
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\Microsoft.Web.Infrastructure.dll
+C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\NLog.dll
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\System.Data.SQLite.dll
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\System.Data.SQLite.EF6.dll
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\System.Data.SQLite.Linq.dll
@@ -75,6 +77,7 @@ C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\Microsoft.P
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\Microsoft.Practices.Unity.xml
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\Microsoft.Practices.Unity.Configuration.xml
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\Microsoft.Practices.Unity.RegistrationByConvention.xml
+C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\NLog.xml
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\System.Data.SQLite.xml
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\obj\Debug\IssueTracker.Web.csproj.AssemblyReference.cache

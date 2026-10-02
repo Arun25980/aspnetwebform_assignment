@@ -46,6 +46,7 @@ namespace IssueTracker.Data.Repositories
             Context.SaveChanges(); // Persists updates instantly
         }
 
+
         public virtual void SoftDelete(object id)
         {
             var entity = GetById(id);

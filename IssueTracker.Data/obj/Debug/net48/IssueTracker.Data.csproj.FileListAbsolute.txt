@@ -10,6 +10,7 @@ C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Data\obj\Debug\net4
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Data\obj\Debug\net48\IssueTracker.Data.AssemblyInfoInputs.cache
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Data\obj\Debug\net48\IssueTracker.Data.AssemblyInfo.cs
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Data\obj\Debug\net48\IssueTracker.Data.csproj.CoreCompileInputs.cache
+C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Data\obj\Debug\net48\IssueTracker.Data.sourcelink.json
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Data\obj\Debug\net48\IssueTra.6C306D89.Up2Date
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Data\obj\Debug\net48\IssueTracker.Data.dll
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Data\obj\Debug\net48\IssueTracker.Data.pdb

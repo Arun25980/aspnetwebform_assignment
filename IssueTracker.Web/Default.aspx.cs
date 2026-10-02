@@ -15,13 +15,6 @@ namespace IssueTracker.Web
         [Dependency]
         public IRepository<Issue> IssueRepository { get; set; }
 
-        protected void Page_Load(object sender, EventArgs e)
-        {
-            if (!IsPostBack)
-            {
-                BindGrid();
-            }
-        }
         protected void Page_Init(object sender, EventArgs e)
         {
             // Resolve directly from Unity container if property injection is skipped
@@ -29,6 +22,14 @@ namespace IssueTracker.Web
             if (container != null)
             {
                 IssueRepository = container.Resolve<IRepository<Issue>>();
+            }
+        }
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                BindGrid();
             }
         }
 
@@ -114,24 +115,18 @@ namespace IssueTracker.Web
             BindGrid();
         }
 
-        private void ClearForm()
-        {
-            hfIssueID.Value = string.Empty;
-            txtTitle.Text = string.Empty;
-            txtDescription.Text = string.Empty;
-            ddlPriority.SelectedIndex = 0;
-            txtAssignedTo.Text = string.Empty;
-            btnSave.Text = "Save Issue";
-        }
         protected void gvIssues_RowCommand(object sender, GridViewCommandEventArgs e)
         {
             if (e.CommandName == "EditIssue")
             {
-                int issueId = Convert.ToInt32(e.CommandArgument);
-                var issue = IssueRepository.GetById(issueId);
+                int issueID = Convert.ToInt32(e.CommandArgument);
+
+                // Fetch data using repository instead of raw SQL/DataTable
+                var issue = IssueRepository.GetById(issueID);
 
                 if (issue != null)
                 {
+                    // 1. Populate the form controls
                     hfIssueID.Value = issue.IssueID.ToString();
                     txtTitle.Text = issue.Title;
                     txtDescription.Text = issue.Description;
@@ -142,7 +137,10 @@ namespace IssueTracker.Web
                     }
 
                     txtAssignedTo.Text = issue.AssignedTo;
-                    btnSave.Text = "Update Issue";
+
+                    // 2. Open Modal via JavaScript
+                    string script = "window.onload = function() { openModal(); };";
+                    ClientScript.RegisterStartupScript(this.GetType(), "OpenModal", script, true);
                 }
             }
             else if (e.CommandName == "DeleteIssue")
@@ -157,9 +155,26 @@ namespace IssueTracker.Web
                     IssueRepository.Update(issue);
 
                     ClearForm();
-                    BindGrid(); // Re-bind grid to instantly reflect deletion
+                    BindGrid();
                 }
             }
+        }
+
+
+        protected void gvIssues_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            gvIssues.PageIndex = e.NewPageIndex;
+            BindGrid(txtSearch.Text, ddlSearchBy.SelectedValue);
+        }
+
+        private void ClearForm()
+        {
+            hfIssueID.Value = string.Empty;
+            txtTitle.Text = string.Empty;
+            txtDescription.Text = string.Empty;
+            ddlPriority.SelectedIndex = 0;
+            txtAssignedTo.Text = string.Empty;
+            btnSave.Text = "Save Issue";
         }
     }
 }
