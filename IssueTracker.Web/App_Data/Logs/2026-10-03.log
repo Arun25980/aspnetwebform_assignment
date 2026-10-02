@@ -1,0 +1,48 @@
+2026-10-03 00:02:49.3372 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 00:04:46.9234 | ERROR | IssueTracker.Web.Global | Unhandled Exception caught in Application_Error
+System.InvalidOperationException: The entity type Issue is not part of the model for the current context.
+   at System.Data.Entity.Internal.InternalContext.UpdateEntitySetMappingsForType(Type entityType)
+   at System.Data.Entity.Internal.InternalContext.GetEntitySetAndBaseTypeForType(Type entityType)
+   at System.Data.Entity.Internal.Linq.InternalSet`1.Initialize()
+   at System.Data.Entity.Internal.Linq.InternalSet`1.GetEnumerator()
+   at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   at IssueTracker.Data.Repositories.Repository`1.GetAll() in C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Data\Repositories\Repository.cs:line 28
+   at IssueTracker.Web.Archive.BindGrid(String searchKeyword, String searchBy) in C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\Archive.aspx.cs:line 41
+   at IssueTracker.Web.Archive.Page_Load(Object sender, EventArgs e) in C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\Archive.aspx.cs:line 33
+   at System.Web.UI.Control.OnLoad(EventArgs e)
+   at System.Web.UI.Control.LoadRecursive()
+   at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)
+--------------------------------------------------
+
+2026-10-03 00:07:39.5514 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 00:12:31.9368 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 00:22:43.8615 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 00:32:28.5653 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 00:35:21.5822 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 00:37:30.2184 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 00:43:21.9549 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+

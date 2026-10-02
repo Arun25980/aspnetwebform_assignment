@@ -1,5 +1,6 @@
 ﻿using IssueTracker.Core.Entities;
 using IssueTracker.Core.Interfaces;
+using IssueTracker.Data;
 using Microsoft.Practices.Unity;
 using System;
 using System.Linq;
@@ -15,13 +16,21 @@ namespace IssueTracker.Web
         [Dependency]
         public IRepository<Issue> IssueRepository { get; set; }
 
+        [Dependency("ArchiveRepository")]
+        public IRepository<ArchiveIssue> ArchiveRepository { get; set; }
+
         protected void Page_Init(object sender, EventArgs e)
         {
             // Resolve directly from Unity container if property injection is skipped
+          
             var container = HttpContext.Current.Application.GetContainer();
             if (container != null)
             {
-                IssueRepository = container.Resolve<IRepository<Issue>>();
+                if (IssueRepository == null)
+                    IssueRepository = container.Resolve<IRepository<Issue>>();
+
+                if (ArchiveRepository == null)
+                    ArchiveRepository = container.Resolve<IRepository<ArchiveIssue>>("ArchiveRepository");
             }
         }
 
@@ -150,16 +159,63 @@ namespace IssueTracker.Web
 
                 if (issue != null)
                 {
-                    // Soft delete
-                    issue.IsDeleted = 1;
-                    IssueRepository.Update(issue);
+                    // 1. Map to Archive entity
+                    var archiveRecord = new ArchiveIssue
+                    {
+                        OriginalIssueId = issue.IssueID,
+                        Title = issue.Title,
+                        Description = issue.Description,
+                        Status = issue.Status,
+                        Priority = issue.Priority,
+                        ArchivedDate = DateTime.Now
+                    };
+
+                    // 2. Save record to Archive database
+                    ArchiveRepository.Add(archiveRecord);
+
+                    // 3. Perform Soft Delete in Primary database
+                    IssueRepository.SoftDelete(issueId);
+                    // Note: If SoftDelete inside your repository sets IsDeleted = 1 internally, 
+                    // you can use: IssueRepository.SoftDelete(issueId);
+                    // Otherwise keep:
+                    // issue.IsDeleted = 1;
+                    // IssueRepository.Update(issue);
 
                     ClearForm();
                     BindGrid();
                 }
             }
         }
+        protected void gvIssues_RowDeleting(object sender, GridViewDeleteEventArgs e)
+        {
+            int issueId = Convert.ToInt32(gvIssues.DataKeys[e.RowIndex].Value);
 
+            // 1. Fetch record from Primary DB
+            var activeIssue = IssueRepository.GetById(issueId);
+
+            if (activeIssue != null)
+            {
+                // 2. Map active issue properties to Archive entity
+                var archiveRecord = new ArchiveIssue
+                {
+                    OriginalIssueId = activeIssue.IssueID,
+                    Title = activeIssue.Title,
+                    Description = activeIssue.Description,
+                    Status = activeIssue.Status,
+                    Priority = activeIssue.Priority,
+                    ArchivedDate = DateTime.Now
+                };
+
+                // 3. Save to Archive DB
+                ArchiveRepository.Add(archiveRecord);
+
+                // 4. Remove from Primary DB using SoftDelete
+                IssueRepository.SoftDelete(issueId);
+
+                // 5. Refresh Primary Grid
+                BindGrid();
+            }
+        }
 
         protected void gvIssues_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {

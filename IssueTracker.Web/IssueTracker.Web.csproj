@@ -115,6 +115,7 @@
     <Content Include="App_Data\PrimaryIssues_log.ldf">
       <DependentUpon>PrimaryIssues.mdf</DependentUpon>
     </Content>
+    <Content Include="Archive.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="Error.aspx" />
     <Content Include="Global.asax" />
@@ -122,6 +123,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\UnityWebFormsStart.cs" />
+    <Compile Include="Archive.aspx.cs">
+      <DependentUpon>Archive.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Archive.aspx.designer.cs">
+      <DependentUpon>Archive.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
