@@ -1,8 +1,11 @@
 ﻿using IssueTracker.Core.Entities;
 using IssueTracker.Core.Interfaces;
+using IssueTracker.Core.Validation;
 using IssueTracker.Data;
 using Microsoft.Practices.Unity;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -89,39 +92,80 @@ namespace IssueTracker.Web
 
         protected void btnSave_Click(object sender, EventArgs e)
         {
-            int issueId = 0;
-            int.TryParse(hfIssueID.Value, out issueId);
+            // 1. Clear previous errors
+            lblModalError.Visible = false;
+            lblModalError.Text = string.Empty;
 
-            if (issueId == 0)
+            // 2. Server-side Validation
+            List<string> errors = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(txtTitle.Text))
+                errors.Add("Title is required.");
+
+            if (string.IsNullOrWhiteSpace(txtDescription.Text))
+                errors.Add("Description is required.");
+
+            if (string.IsNullOrWhiteSpace(ddlPriority.SelectedValue))
+                errors.Add("Please select a priority.");
+
+            if (string.IsNullOrWhiteSpace(txtAssignedTo.Text))
+                errors.Add("Assigned person is required.");
+
+            if (errors.Count > 0)
             {
+                lblModalError.Text = "<strong>Please fix the following errors:</strong><ul class='mb-0 ps-3'>" +
+                    string.Join("", errors.Select(err => "<li>" + err + "</li>")) + "</ul>";
+                lblModalError.Visible = true;
+
+                upModal.Update(); // Keeps data in textboxes and shows red alert box
+                return;
+            }
+
+            // 3. Perform Insert OR Update based on hfIssueID
+            SaveOrUpdateIssue();
+
+            // 4. Refresh GridView and update its UpdatePanel
+            BindGrid();
+            upGrid.Update();
+
+            // 5. Close Modal and clean up backdrop
+            ScriptManager.RegisterStartupScript(this, GetType(), "CloseModalScript", "closeModal();", true);
+        }
+
+        private void SaveOrUpdateIssue()
+        {
+            // Determine if this is an Edit or Add New
+            int issueID = 0;
+            bool isEdit = int.TryParse(hfIssueID.Value, out issueID) && issueID > 0;
+
+            if (isEdit)
+            {
+                // UPDATE existing issue
+                var issue = IssueRepository.GetById(issueID);
+                if (issue != null)
+                {
+                    issue.Title = txtTitle.Text.Trim();
+                    issue.Description = txtDescription.Text.Trim();
+                    issue.Priority = ddlPriority.SelectedValue;
+                    issue.AssignedTo = txtAssignedTo.Text.Trim();
+
+                    IssueRepository.Update(issue); // Call your repository/database Update method
+                }
+            }
+            else
+            {
+                // INSERT new issue
                 var newIssue = new Issue
                 {
                     Title = txtTitle.Text.Trim(),
                     Description = txtDescription.Text.Trim(),
-                    Priority = string.IsNullOrEmpty(ddlPriority.SelectedValue) ? "Low" : ddlPriority.SelectedValue,
+                    Priority = ddlPriority.SelectedValue,
                     AssignedTo = txtAssignedTo.Text.Trim(),
-                    CreatedDate = DateTime.Now,
-                    IsDeleted = 0
+                    CreatedDate = DateTime.Now
                 };
 
-                IssueRepository.Add(newIssue);
+                IssueRepository.Add(newIssue); // Call your repository/database Insert method
             }
-            else
-            {
-                var existing = IssueRepository.GetById(issueId);
-                if (existing != null)
-                {
-                    existing.Title = txtTitle.Text.Trim();
-                    existing.Description = txtDescription.Text.Trim();
-                    existing.Priority = ddlPriority.SelectedValue;
-                    existing.AssignedTo = txtAssignedTo.Text.Trim();
-
-                    IssueRepository.Update(existing);
-                }
-            }
-
-            ClearForm();
-            BindGrid();
         }
 
         protected void gvIssues_RowCommand(object sender, GridViewCommandEventArgs e)
@@ -130,12 +174,16 @@ namespace IssueTracker.Web
             {
                 int issueID = Convert.ToInt32(e.CommandArgument);
 
-                // Fetch data using repository instead of raw SQL/DataTable
+                // Fetch data using repository
                 var issue = IssueRepository.GetById(issueID);
+
+                // 1. Reset error label state
+                lblModalError.Visible = false;
+                lblModalError.Text = string.Empty;
 
                 if (issue != null)
                 {
-                    // 1. Populate the form controls
+                    // 2. Populate form controls
                     hfIssueID.Value = issue.IssueID.ToString();
                     txtTitle.Text = issue.Title;
                     txtDescription.Text = issue.Description;
@@ -144,12 +192,24 @@ namespace IssueTracker.Web
                     {
                         ddlPriority.SelectedValue = issue.Priority;
                     }
+                    else
+                    {
+                        ddlPriority.SelectedIndex = 0;
+                    }
 
                     txtAssignedTo.Text = issue.AssignedTo;
 
-                    // 2. Open Modal via JavaScript
-                    string script = "window.onload = function() { openModal(); };";
-                    ClientScript.RegisterStartupScript(this.GetType(), "OpenModal", script, true);
+                    // 3. Force the UpdatePanel to sync and refresh its controls
+                    upModal.Update();
+
+                    // 4. Open Modal via ScriptManager (works with UpdatePanel)
+                    ScriptManager.RegisterStartupScript(
+                        this,
+                        this.GetType(),
+                        "OpenModal",
+                        "openModal();",
+                        true
+                    );
                 }
             }
             else if (e.CommandName == "DeleteIssue")

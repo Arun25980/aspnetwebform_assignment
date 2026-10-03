@@ -1,9 +1,11 @@
-﻿using System;
+﻿using IssueTracker.Core.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Linq.Expressions;
-using IssueTracker.Core.Interfaces;
+using System.Text;
 
 namespace IssueTracker.Data.Repositories
 {
@@ -35,8 +37,24 @@ namespace IssueTracker.Data.Repositories
 
         public virtual void Add(TEntity entity)
         {
-            DbSet.Add(entity);
-            Context.SaveChanges(); // Persists instantly to SQL LocalDB
+            try
+            {
+                DbSet.Add(entity);
+                Context.SaveChanges();
+            }
+            catch (DbEntityValidationException ex)
+            {
+                var sb = new StringBuilder();
+                foreach (var failure in ex.EntityValidationErrors)
+                {
+                    foreach (var error in failure.ValidationErrors)
+                    {
+                        sb.AppendLine($"Property: {error.PropertyName} - Error: {error.ErrorMessage}");
+                    }
+                }
+                // Throw an explicit exception with exact failing properties
+                throw new Exception("Entity Validation Failed:\n" + sb.ToString(), ex);
+            }
         }
 
         public virtual void Update(TEntity entity)

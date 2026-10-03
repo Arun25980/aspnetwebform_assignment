@@ -46,3 +46,110 @@ System.InvalidOperationException: The entity type Issue is not part of the model
 
 --------------------------------------------------
 
+2026-10-03 00:48:15.2301 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 12:57:25.5121 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 13:00:57.4294 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 13:04:40.3910 | ERROR | IssueTracker.Web.Global | Unhandled Exception caught in Application_Error
+System.InvalidOperationException: WebForms UnobtrusiveValidationMode requires a ScriptResourceMapping for 'jquery'. Please add a ScriptResourceMapping named jquery(case-sensitive).
+   at System.Web.UI.ClientScriptManager.EnsureJqueryRegistered()
+   at System.Web.UI.WebControls.BaseValidator.RegisterUnobtrusiveScript()
+   at System.Web.UI.WebControls.BaseValidator.OnPreRender(EventArgs e)
+   at System.Web.UI.Control.PreRenderRecursiveInternal()
+   at System.Web.UI.Control.PreRenderRecursiveInternal()
+   at System.Web.UI.Control.PreRenderRecursiveInternal()
+   at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)
+--------------------------------------------------
+
+2026-10-03 13:05:00.5518 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 13:05:05.1819 | ERROR | IssueTracker.Web.Global | Unhandled Exception caught in Application_Error
+System.InvalidOperationException: WebForms UnobtrusiveValidationMode requires a ScriptResourceMapping for 'jquery'. Please add a ScriptResourceMapping named jquery(case-sensitive).
+   at System.Web.UI.ClientScriptManager.EnsureJqueryRegistered()
+   at System.Web.UI.WebControls.BaseValidator.RegisterUnobtrusiveScript()
+   at System.Web.UI.WebControls.BaseValidator.OnPreRender(EventArgs e)
+   at System.Web.UI.Control.PreRenderRecursiveInternal()
+   at System.Web.UI.Control.PreRenderRecursiveInternal()
+   at System.Web.UI.Control.PreRenderRecursiveInternal()
+   at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)
+--------------------------------------------------
+
+2026-10-03 13:06:25.2247 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 13:06:29.9693 | ERROR | IssueTracker.Web.Global | Unhandled Exception caught in Application_Error
+System.InvalidOperationException: WebForms UnobtrusiveValidationMode requires a ScriptResourceMapping for 'jquery'. Please add a ScriptResourceMapping named jquery(case-sensitive).
+   at System.Web.UI.ClientScriptManager.EnsureJqueryRegistered()
+   at System.Web.UI.WebControls.BaseValidator.RegisterUnobtrusiveScript()
+   at System.Web.UI.WebControls.BaseValidator.OnPreRender(EventArgs e)
+   at System.Web.UI.Control.PreRenderRecursiveInternal()
+   at System.Web.UI.Control.PreRenderRecursiveInternal()
+   at System.Web.UI.Control.PreRenderRecursiveInternal()
+   at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)
+--------------------------------------------------
+
+2026-10-03 13:07:08.3812 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 14:21:49.6903 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 14:22:08.3960 | ERROR | IssueTracker.Web.Global | Unhandled Exception caught in Application_Error
+System.Data.Entity.Validation.DbEntityValidationException: Validation failed for one or more entities. See 'EntityValidationErrors' property for more details.
+   at System.Data.Entity.Internal.InternalContext.SaveChanges()
+   at IssueTracker.Data.Repositories.Repository`1.Add(TEntity entity) in C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Data\Repositories\Repository.cs:line 39
+   at IssueTracker.Web.Default.btnSave_Click(Object sender, EventArgs e) in C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\Default.aspx.cs:line 107
+   at System.Web.UI.WebControls.Button.OnClick(EventArgs e)
+   at System.Web.UI.WebControls.Button.RaisePostBackEvent(String eventArgument)
+   at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)
+--------------------------------------------------
+
+2026-10-03 18:18:26.9514 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 18:24:22.6135 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 18:27:36.3697 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 18:32:14.2607 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 18:35:01.6389 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 18:39:15.3126 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 18:44:01.1928 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 18:51:17.8681 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+
+2026-10-03 18:54:08.5194 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+

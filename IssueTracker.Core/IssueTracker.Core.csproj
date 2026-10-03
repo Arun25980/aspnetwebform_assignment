@@ -3,4 +3,8 @@
 	<PropertyGroup>
 		<TargetFramework>net48</TargetFramework>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <Reference Include="System.ComponentModel.DataAnnotations" />
+	</ItemGroup>
 </Project>

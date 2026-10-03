@@ -9,6 +9,7 @@ namespace IssueTracker.Data
         {
             // Disables Code First migrations since table is already defined in LocalDB .mdf
             Database.SetInitializer<PrimaryIssueEntities>(null);
+            this.Configuration.ValidateOnSaveEnabled = false;
         }
 
         public DbSet<Issue> Issues { get; set; }
