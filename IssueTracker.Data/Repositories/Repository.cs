@@ -1,11 +1,10 @@
-﻿using IssueTracker.Core.Interfaces;
+﻿using IssueTracker.Core.Entities;
+using IssueTracker.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Validation;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace IssueTracker.Data.Repositories
 {
@@ -37,33 +36,16 @@ namespace IssueTracker.Data.Repositories
 
         public virtual void Add(TEntity entity)
         {
-            try
-            {
-                DbSet.Add(entity);
-                Context.SaveChanges();
-            }
-            catch (DbEntityValidationException ex)
-            {
-                var sb = new StringBuilder();
-                foreach (var failure in ex.EntityValidationErrors)
-                {
-                    foreach (var error in failure.ValidationErrors)
-                    {
-                        sb.AppendLine($"Property: {error.PropertyName} - Error: {error.ErrorMessage}");
-                    }
-                }
-                // Throw an explicit exception with exact failing properties
-                throw new Exception("Entity Validation Failed:\n" + sb.ToString(), ex);
-            }
+            // Simply stage the entity in memory — UnitOfWork handles SaveChanges() and validation catching
+            DbSet.Add(entity);
         }
 
         public virtual void Update(TEntity entity)
         {
+            // Mark entity as Modified in memory — UnitOfWork handles SaveChanges()
             DbSet.Attach(entity);
             Context.Entry(entity).State = EntityState.Modified;
-            Context.SaveChanges(); // Persists updates instantly
         }
-
 
         public virtual void SoftDelete(object id)
         {

@@ -1,46 +1,67 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.Validation;
+using System.Text;
 using IssueTracker.Core.Entities;
 using IssueTracker.Core.Interfaces;
+using IssueTracker.Data.Factories; // Ensure this namespace is imported
 using IssueTracker.Data.Repositories;
 
 namespace IssueTracker.Data
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly PrimaryIssueEntities _primaryContext;
-        private readonly ArchiveIssueEntities _archiveContext;
+        private readonly DbContext _primaryContext;
+        private readonly DbContext _archiveContext;
+        private readonly Dictionary<Type, object> _repositories = new Dictionary<Type, object>();
 
         public UnitOfWork()
         {
-            _primaryContext = new PrimaryIssueEntities();
-            _archiveContext = new ArchiveIssueEntities();
-
-            // Pass the primary context explicitly to the primary Issue repository
-            Issues = new Repository<IssueTracker.Core.Entities.Issue>(_primaryContext);
-            ArchiveIssues = new Repository<ArchiveIssue>(_archiveContext);
+            // Use DbContextFactory to instantiate contexts cleanly!
+            _primaryContext = DbContextFactory.CreateContext("primary");
+            _archiveContext = DbContextFactory.CreateContext("archive");
         }
-
-        public IRepository<Issue> Issues { get; private set; }
-        public IRepository<ArchiveIssue> ArchiveIssues { get; private set; }
 
         public IRepository<TEntity> GetRepository<TEntity>() where TEntity : class
         {
-            if (typeof(TEntity) == typeof(Issue))
+            var type = typeof(TEntity);
+
+            if (!_repositories.ContainsKey(type))
             {
-                return (IRepository<TEntity>)Issues;
+                // Dynamic routing: ArchiveIssue uses Archive Context, all others use Primary Context
+                DbContext contextToUse = (type == typeof(ArchiveIssue))
+                    ? _archiveContext
+                    : _primaryContext;
+
+                var repositoryInstance = new Repository<TEntity>(contextToUse);
+                _repositories.Add(type, repositoryInstance);
             }
 
-            if (typeof(TEntity) == typeof(ArchiveIssue))
-            {
-                return (IRepository<TEntity>)ArchiveIssues;
-            }
-
-            throw new ArgumentException($"No repository configured for entity type '{typeof(TEntity).Name}'.");
+            return (IRepository<TEntity>)_repositories[type];
         }
 
         public int Complete()
         {
-            return _primaryContext.SaveChanges() + _archiveContext.SaveChanges();
+            try
+            {
+                int rowsAffected = 0;
+                rowsAffected += _primaryContext.SaveChanges();
+                rowsAffected += _archiveContext.SaveChanges();
+                return rowsAffected;
+            }
+            catch (DbEntityValidationException ex)
+            {
+                var sb = new StringBuilder();
+                foreach (var failure in ex.EntityValidationErrors)
+                {
+                    foreach (var error in failure.ValidationErrors)
+                    {
+                        sb.AppendLine($"Property: {error.PropertyName} - Error: {error.ErrorMessage}");
+                    }
+                }
+                throw new Exception("Entity Validation Failed:\n" + sb.ToString(), ex);
+            }
         }
 
         public void Dispose()

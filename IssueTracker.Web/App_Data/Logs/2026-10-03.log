@@ -153,3 +153,7 @@ System.Data.Entity.Validation.DbEntityValidationException: Validation failed for
 
 --------------------------------------------------
 
+2026-10-03 18:57:28.2593 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully.
+
+--------------------------------------------------
+

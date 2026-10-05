@@ -1,11 +1,9 @@
 ﻿using IssueTracker.Core.Entities;
 using IssueTracker.Core.Interfaces;
-using IssueTracker.Core.Validation;
 using IssueTracker.Data;
 using Microsoft.Practices.Unity;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -17,23 +15,15 @@ namespace IssueTracker.Web
     public partial class Default : Page
     {
         [Dependency]
-        public IRepository<Issue> IssueRepository { get; set; }
-
-        [Dependency("ArchiveRepository")]
-        public IRepository<ArchiveIssue> ArchiveRepository { get; set; }
+        public IUnitOfWork UnitOfWork { get; set; }
 
         protected void Page_Init(object sender, EventArgs e)
         {
-            // Resolve directly from Unity container if property injection is skipped
-          
+            // Resolve UnitOfWork directly from Unity container if property injection is skipped
             var container = HttpContext.Current.Application.GetContainer();
-            if (container != null)
+            if (container != null && UnitOfWork == null)
             {
-                if (IssueRepository == null)
-                    IssueRepository = container.Resolve<IRepository<Issue>>();
-
-                if (ArchiveRepository == null)
-                    ArchiveRepository = container.Resolve<IRepository<ArchiveIssue>>("ArchiveRepository");
+                UnitOfWork = container.Resolve<IUnitOfWork>();
             }
         }
 
@@ -47,9 +37,10 @@ namespace IssueTracker.Web
 
         private void BindGrid(string searchKeyword = "", string searchBy = "All")
         {
-            if (IssueRepository == null) return;
+            if (UnitOfWork == null) return;
 
-            var query = IssueRepository.Find(i => i.IsDeleted == 0).AsQueryable();
+            var issueRepo = UnitOfWork.GetRepository<Issue>();
+            var query = issueRepo.Find(i => i.IsDeleted == 0).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchKeyword))
             {
@@ -117,11 +108,11 @@ namespace IssueTracker.Web
                     string.Join("", errors.Select(err => "<li>" + err + "</li>")) + "</ul>";
                 lblModalError.Visible = true;
 
-                upModal.Update(); // Keeps data in textboxes and shows red alert box
+                upModal.Update();
                 return;
             }
 
-            // 3. Perform Insert OR Update based on hfIssueID
+            // 3. Perform Insert OR Update and commit via UnitOfWork
             SaveOrUpdateIssue();
 
             // 4. Refresh GridView and update its UpdatePanel
@@ -134,14 +125,13 @@ namespace IssueTracker.Web
 
         private void SaveOrUpdateIssue()
         {
-            // Determine if this is an Edit or Add New
             int issueID = 0;
             bool isEdit = int.TryParse(hfIssueID.Value, out issueID) && issueID > 0;
+            var issueRepo = UnitOfWork.GetRepository<Issue>();
 
             if (isEdit)
             {
-                // UPDATE existing issue
-                var issue = IssueRepository.GetById(issueID);
+                var issue = issueRepo.GetById(issueID);
                 if (issue != null)
                 {
                     issue.Title = txtTitle.Text.Trim();
@@ -149,23 +139,26 @@ namespace IssueTracker.Web
                     issue.Priority = ddlPriority.SelectedValue;
                     issue.AssignedTo = txtAssignedTo.Text.Trim();
 
-                    IssueRepository.Update(issue); // Call your repository/database Update method
+                    issueRepo.Update(issue); // Staged in memory
                 }
             }
             else
             {
-                // INSERT new issue
                 var newIssue = new Issue
                 {
                     Title = txtTitle.Text.Trim(),
                     Description = txtDescription.Text.Trim(),
                     Priority = ddlPriority.SelectedValue,
                     AssignedTo = txtAssignedTo.Text.Trim(),
-                    CreatedDate = DateTime.Now
+                    CreatedDate = DateTime.Now,
+                    IsDeleted = 0
                 };
 
-                IssueRepository.Add(newIssue); // Call your repository/database Insert method
+                issueRepo.Add(newIssue); // Staged in memory
             }
+
+            // Commit all changes to DB in a single transaction
+            UnitOfWork.Complete();
         }
 
         protected void gvIssues_RowCommand(object sender, GridViewCommandEventArgs e)
@@ -173,17 +166,14 @@ namespace IssueTracker.Web
             if (e.CommandName == "EditIssue")
             {
                 int issueID = Convert.ToInt32(e.CommandArgument);
+                var issueRepo = UnitOfWork.GetRepository<Issue>();
+                var issue = issueRepo.GetById(issueID);
 
-                // Fetch data using repository
-                var issue = IssueRepository.GetById(issueID);
-
-                // 1. Reset error label state
                 lblModalError.Visible = false;
                 lblModalError.Text = string.Empty;
 
                 if (issue != null)
                 {
-                    // 2. Populate form controls
                     hfIssueID.Value = issue.IssueID.ToString();
                     txtTitle.Text = issue.Title;
                     txtDescription.Text = issue.Description;
@@ -199,10 +189,8 @@ namespace IssueTracker.Web
 
                     txtAssignedTo.Text = issue.AssignedTo;
 
-                    // 3. Force the UpdatePanel to sync and refresh its controls
                     upModal.Update();
 
-                    // 4. Open Modal via ScriptManager (works with UpdatePanel)
                     ScriptManager.RegisterStartupScript(
                         this,
                         this.GetType(),
@@ -215,47 +203,25 @@ namespace IssueTracker.Web
             else if (e.CommandName == "DeleteIssue")
             {
                 int issueId = Convert.ToInt32(e.CommandArgument);
-                var issue = IssueRepository.GetById(issueId);
-
-                if (issue != null)
-                {
-                    // 1. Map to Archive entity
-                    var archiveRecord = new ArchiveIssue
-                    {
-                        OriginalIssueId = issue.IssueID,
-                        Title = issue.Title,
-                        Description = issue.Description,
-                        Status = issue.Status,
-                        Priority = issue.Priority,
-                        ArchivedDate = DateTime.Now
-                    };
-
-                    // 2. Save record to Archive database
-                    ArchiveRepository.Add(archiveRecord);
-
-                    // 3. Perform Soft Delete in Primary database
-                    IssueRepository.SoftDelete(issueId);
-                    // Note: If SoftDelete inside your repository sets IsDeleted = 1 internally, 
-                    // you can use: IssueRepository.SoftDelete(issueId);
-                    // Otherwise keep:
-                    // issue.IsDeleted = 1;
-                    // IssueRepository.Update(issue);
-
-                    ClearForm();
-                    BindGrid();
-                }
+                PerformArchiveAndDelete(issueId);
             }
         }
+
         protected void gvIssues_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
             int issueId = Convert.ToInt32(gvIssues.DataKeys[e.RowIndex].Value);
+            PerformArchiveAndDelete(issueId);
+        }
 
-            // 1. Fetch record from Primary DB
-            var activeIssue = IssueRepository.GetById(issueId);
+        private void PerformArchiveAndDelete(int issueId)
+        {
+            var issueRepo = UnitOfWork.GetRepository<Issue>();
+            var archiveRepo = UnitOfWork.GetRepository<ArchiveIssue>();
+
+            var activeIssue = issueRepo.GetById(issueId);
 
             if (activeIssue != null)
             {
-                // 2. Map active issue properties to Archive entity
                 var archiveRecord = new ArchiveIssue
                 {
                     OriginalIssueId = activeIssue.IssueID,
@@ -266,14 +232,16 @@ namespace IssueTracker.Web
                     ArchivedDate = DateTime.Now
                 };
 
-                // 3. Save to Archive DB
-                ArchiveRepository.Add(archiveRecord);
+                // Stage both operations
+                archiveRepo.Add(archiveRecord);
+                issueRepo.SoftDelete(issueId);
 
-                // 4. Remove from Primary DB using SoftDelete
-                IssueRepository.SoftDelete(issueId);
+                // Execute transaction across both repositories
+                UnitOfWork.Complete();
 
-                // 5. Refresh Primary Grid
+                ClearForm();
                 BindGrid();
+                upGrid.Update();
             }
         }
 

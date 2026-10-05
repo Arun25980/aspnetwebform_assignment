@@ -1,4 +1,4 @@
-﻿using IssueTracker.Data; // Contains ArchiveIssue entity from EDMX
+﻿using IssueTracker.Data; // Contains ArchiveIssue entity
 using IssueTracker.Core.Interfaces;
 using Microsoft.Practices.Unity;
 using System;
@@ -12,15 +12,15 @@ namespace IssueTracker.Web
 {
     public partial class Archive : Page
     {
-        [Dependency("ArchiveRepository")]
-        public IRepository<ArchiveIssue> ArchiveRepository { get; set; }
+        [Dependency]
+        public IUnitOfWork UnitOfWork { get; set; }
 
         protected void Page_Init(object sender, EventArgs e)
         {
             var container = HttpContext.Current.Application.GetContainer();
-            if (container != null && ArchiveRepository == null)
+            if (container != null && UnitOfWork == null)
             {
-                ArchiveRepository = container.Resolve<IRepository<ArchiveIssue>>("ArchiveRepository");
+                UnitOfWork = container.Resolve<IUnitOfWork>();
             }
         }
 
@@ -34,9 +34,10 @@ namespace IssueTracker.Web
 
         private void BindGrid(string searchKeyword = "", string searchBy = "All")
         {
-            if (ArchiveRepository == null) return;
+            if (UnitOfWork == null) return;
 
-            var query = ArchiveRepository.GetAll().AsQueryable();
+            var archiveRepo = UnitOfWork.GetRepository<ArchiveIssue>();
+            var query = archiveRepo.GetAll().AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchKeyword))
             {
@@ -61,7 +62,7 @@ namespace IssueTracker.Web
                 }
             }
 
-            // Order by Archive ID or ArchivedDate
+            // Order by Archive ID
             gvArchive.DataSource = query.OrderByDescending(i => i.Id).ToList();
             gvArchive.DataBind();
         }

@@ -1,3 +1,5 @@
+C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\obj\Debug\IssueTracker.Web.csproj.AssemblyReference.cache
+C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\obj\Debug\IssueTracker.Web.csproj.CoreCompileInputs.cache
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\NLog.config
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\IssueTracker.Web.dll.config
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\IssueTracker.Web.dll
@@ -80,8 +82,6 @@ C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\Microsoft.P
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\NLog.xml
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\System.Data.SQLite.xml
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
-C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\obj\Debug\IssueTracker.Web.csproj.AssemblyReference.cache
-C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\obj\Debug\IssueTracker.Web.csproj.CoreCompileInputs.cache
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\obj\Debug\IssueTra.232C6F3F.Up2Date
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\obj\Debug\IssueTracker.Web.dll
 C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\obj\Debug\IssueTracker.Web.pdb
