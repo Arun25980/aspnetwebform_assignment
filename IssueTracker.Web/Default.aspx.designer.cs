@@ -33,6 +33,15 @@ namespace IssueTracker.Web
         protected global::System.Web.UI.ScriptManager ScriptManager1;
 
         /// <summary>
+        /// upGrid control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UpdatePanel upGrid;
+
+        /// <summary>
         /// ddlSearchBy control.
         /// </summary>
         /// <remarks>
@@ -67,15 +76,6 @@ namespace IssueTracker.Web
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnClear;
-
-        /// <summary>
-        /// upGrid control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.UpdatePanel upGrid;
 
         /// <summary>
         /// gvIssues control.

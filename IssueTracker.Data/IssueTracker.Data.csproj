@@ -7,16 +7,11 @@
 
 
 	<ItemGroup>
-	  <None Remove="ArchiveIssueModel.edmx" />
 	  <None Remove="PrimaryIssueModel.edmx" />
 	</ItemGroup>
 
 
 	<ItemGroup>
-	  <EntityDeploy Include="ArchiveIssueModel.edmx">
-	    <Generator>EntityModelCodeGenerator</Generator>
-	    <LastGenOutput>ArchiveIssueModel.Designer.cs</LastGenOutput>
-	  </EntityDeploy>
 	  <EntityDeploy Include="PrimaryIssueModel.edmx">
 	    <Generator>EntityModelCodeGenerator</Generator>
 	    <LastGenOutput>PrimaryIssueModel.Designer.cs</LastGenOutput>
@@ -25,7 +20,7 @@
 
 
 	<ItemGroup>
-	  <PackageReference Include="EntityFramework" Version="6.4.4" />
+	  <PackageReference Include="EntityFramework" Version="6.5.2" />
 	</ItemGroup>
 
 
@@ -40,21 +35,6 @@
 
 
 	<ItemGroup>
-	  <Compile Update="ArchiveIssueModel.Context.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>ArchiveIssueModel.Context.tt</DependentUpon>
-	  </Compile>
-	  <Compile Update="ArchiveIssueModel.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>ArchiveIssueModel.tt</DependentUpon>
-	  </Compile>
-	  <Compile Update="ArchiveIssueModel.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>ArchiveIssueModel.edmx</DependentUpon>
-	  </Compile>
 	  <Compile Update="PrimaryIssueModel.Context.cs">
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
@@ -79,14 +59,6 @@
 
 
 	<ItemGroup>
-	  <None Update="ArchiveIssueModel.Context.tt">
-	    <Generator>TextTemplatingFileGenerator</Generator>
-	    <LastGenOutput>ArchiveIssueModel.Context.cs</LastGenOutput>
-	  </None>
-	  <None Update="ArchiveIssueModel.tt">
-	    <Generator>TextTemplatingFileGenerator</Generator>
-	    <LastGenOutput>ArchiveIssueModel.cs</LastGenOutput>
-	  </None>
 	  <None Update="PrimaryIssueModel.Context.tt">
 	    <Generator>TextTemplatingFileGenerator</Generator>
 	    <LastGenOutput>PrimaryIssueModel.Context.cs</LastGenOutput>

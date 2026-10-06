@@ -2,72 +2,74 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Validation;
-using System.Text;
-using IssueTracker.Core.Entities;
 using IssueTracker.Core.Interfaces;
-using IssueTracker.Data.Factories; // Ensure this namespace is imported
-using IssueTracker.Data.Repositories;
 
 namespace IssueTracker.Data
 {
+    /// <summary>
+    /// Implements the Unit of Work pattern to manage repository instances and commit transactions 
+    /// within a single HTTP request lifecycle using an injected Entity Framework DbContext.
+    /// </summary>
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly DbContext _primaryContext;
-        private readonly DbContext _archiveContext;
+        private readonly PrimaryIssueEntities _context;
         private readonly Dictionary<Type, object> _repositories = new Dictionary<Type, object>();
 
-        public UnitOfWork()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UnitOfWork"/> class.
+        /// </summary>
+        /// <param name="context">The concrete PrimaryIssueEntities instance injected by DI.</param>
+        public UnitOfWork(PrimaryIssueEntities context)
         {
-            // Use DbContextFactory to instantiate contexts cleanly!
-            _primaryContext = DbContextFactory.CreateContext("primary");
-            _archiveContext = DbContextFactory.CreateContext("archive");
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
+        /// <summary>
+        /// Retrieves or creates a generic repository instance for the specified entity type.
+        /// </summary>
         public IRepository<TEntity> GetRepository<TEntity>() where TEntity : class
         {
             var type = typeof(TEntity);
 
             if (!_repositories.ContainsKey(type))
             {
-                // Dynamic routing: ArchiveIssue uses Archive Context, all others use Primary Context
-                DbContext contextToUse = (type == typeof(ArchiveIssue))
-                    ? _archiveContext
-                    : _primaryContext;
-
-                var repositoryInstance = new Repository<TEntity>(contextToUse);
+                var repositoryInstance = new Repository<TEntity>(_context);
                 _repositories.Add(type, repositoryInstance);
             }
 
             return (IRepository<TEntity>)_repositories[type];
         }
 
+        /// <summary>
+        /// Saves all pending changes to the database in a single atomic operation.
+        /// </summary>
         public int Complete()
         {
             try
             {
-                int rowsAffected = 0;
-                rowsAffected += _primaryContext.SaveChanges();
-                rowsAffected += _archiveContext.SaveChanges();
-                return rowsAffected;
+                return _context.SaveChanges();
             }
             catch (DbEntityValidationException ex)
             {
-                var sb = new StringBuilder();
-                foreach (var failure in ex.EntityValidationErrors)
+                var errorMessages = new List<string>();
+                foreach (var validationErrors in ex.EntityValidationErrors)
                 {
-                    foreach (var error in failure.ValidationErrors)
+                    foreach (var validationError in validationErrors.ValidationErrors)
                     {
-                        sb.AppendLine($"Property: {error.PropertyName} - Error: {error.ErrorMessage}");
+                        errorMessages.Add($"Property: {validationError.PropertyName} Error: {validationError.ErrorMessage}");
                     }
                 }
-                throw new Exception("Entity Validation Failed:\n" + sb.ToString(), ex);
+                var fullErrorMessage = string.Join("; ", errorMessages);
+                throw new InvalidOperationException($"Validation failed: {fullErrorMessage}", ex);
             }
         }
 
+        /// <summary>
+        /// Releases all resources used by the underlying DbContext.
+        /// </summary>
         public void Dispose()
         {
-            _primaryContext?.Dispose();
-            _archiveContext?.Dispose();
+            _context?.Dispose();
         }
     }
 }

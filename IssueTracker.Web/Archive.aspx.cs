@@ -1,43 +1,58 @@
-﻿using IssueTracker.Data; // Contains ArchiveIssue entity
+﻿using IssueTracker.Core.Entities;
 using IssueTracker.Core.Interfaces;
-using Microsoft.Practices.Unity;
+using IssueTracker.Data;
 using System;
+using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Unity.WebForms;
 
 namespace IssueTracker.Web
 {
+    /// <summary>
+    /// Code-behind for managing soft-deleted/archived issues and restoring records back to active state.
+    /// </summary>
     public partial class Archive : Page
     {
-        [Dependency]
-        public IUnitOfWork UnitOfWork { get; set; }
+        /// <summary>
+        /// Gets or sets the Unit of Work dependency injected via Autofac.
+        /// </summary>
+        private IUnitOfWork _unitOfWork;
 
-        protected void Page_Init(object sender, EventArgs e)
+        public IUnitOfWork UnitOfWork
         {
-            var container = HttpContext.Current.Application.GetContainer();
-            if (container != null && UnitOfWork == null)
+            get
             {
-                UnitOfWork = container.Resolve<IUnitOfWork>();
+                if (_unitOfWork == null)
+                {
+                    _unitOfWork = new UnitOfWork(new PrimaryIssueEntities());
+                }
+                return _unitOfWork;
             }
+            set => _unitOfWork = value;
         }
 
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                BindGrid();
+                BindArchiveGrid();
             }
         }
 
-        private void BindGrid(string searchKeyword = "", string searchBy = "All")
+        /// <summary>
+        /// Binds archived issues (IsDeleted == 1) to the GridView with optional search filtering.
+        /// </summary>
+        private void BindArchiveGrid()
         {
-            if (UnitOfWork == null) return;
+            // Retrieve repository through the safe UnitOfWork property getter
+            var issueRepo = UnitOfWork.GetRepository<Issue>();
 
-            var archiveRepo = UnitOfWork.GetRepository<ArchiveIssue>();
-            var query = archiveRepo.GetAll().AsQueryable();
+            string searchKeyword = ViewState["SearchKeyword"] as string ?? string.Empty;
+            string searchBy = ViewState["SearchBy"] as string ?? "All";
+
+            // Query archived records only (IsDeleted == 1)
+            var query = issueRepo.Find(i => i.IsDeleted == 1);
 
             if (!string.IsNullOrWhiteSpace(searchKeyword))
             {
@@ -48,41 +63,94 @@ namespace IssueTracker.Web
                     case "Title":
                         query = query.Where(i => i.Title != null && i.Title.ToLower().Contains(searchKeyword));
                         break;
+
                     case "Priority":
                         query = query.Where(i => i.Priority != null && i.Priority.ToLower().Contains(searchKeyword));
                         break;
-                    case "Status":
-                        query = query.Where(i => i.Status != null && i.Status.ToLower().Contains(searchKeyword));
+
+                    case "AssignedTo":
+                        query = query.Where(i => i.AssignedTo != null && i.AssignedTo.ToLower().Contains(searchKeyword));
                         break;
+
                     default:
                         query = query.Where(i => (i.Title != null && i.Title.ToLower().Contains(searchKeyword)) ||
                                                  (i.Priority != null && i.Priority.ToLower().Contains(searchKeyword)) ||
-                                                 (i.Status != null && i.Status.ToLower().Contains(searchKeyword)));
+                                                 (i.AssignedTo != null && i.AssignedTo.ToLower().Contains(searchKeyword)));
                         break;
                 }
             }
 
-            // Order by Archive ID
-            gvArchive.DataSource = query.OrderByDescending(i => i.Id).ToList();
+            // Execute query and bind results
+            gvArchive.DataSource = query.OrderByDescending(i => i.IssueID).ToList();
             gvArchive.DataBind();
         }
 
+        /// <summary>
+        /// Handles search execution for archived issues.
+        /// </summary>
         protected void btnSearch_Click(object sender, EventArgs e)
         {
-            BindGrid(txtSearch.Text, ddlSearchBy.SelectedValue);
+            ViewState["SearchKeyword"] = txtSearch.Text;
+            ViewState["SearchBy"] = ddlSearchBy.SelectedValue;
+            gvArchive.PageIndex = 0;
+            BindArchiveGrid();
         }
 
+        /// <summary>
+        /// Resets search criteria and rebinds the grid.
+        /// </summary>
         protected void btnClear_Click(object sender, EventArgs e)
         {
             txtSearch.Text = string.Empty;
             ddlSearchBy.SelectedIndex = 0;
-            BindGrid();
+            ViewState["SearchKeyword"] = null;
+            ViewState["SearchBy"] = null;
+            gvArchive.PageIndex = 0;
+            BindArchiveGrid();
         }
 
+        /// <summary>
+        /// Row command handler responsible for restoring records (`IsDeleted = 0`).
+        /// </summary>
+        protected void gvArchive_RowCommand(object sender, GridViewCommandEventArgs e)
+        {
+            if (e.CommandName == "RestoreIssue")
+            {
+                int issueId = Convert.ToInt32(e.CommandArgument);
+                RestoreIssueToActive(issueId);
+            }
+        }
+
+        /// <summary>
+        /// Flips the IsDeleted soft flag back to 0 and commits the single database transaction.
+        /// </summary>
+        /// <param name="issueId">The primary key of the issue to restore.</param>
+        private void RestoreIssueToActive(int issueId)
+        {
+            var issueRepo = UnitOfWork.GetRepository<Issue>();
+            var archivedIssue = issueRepo.GetById(issueId);
+
+            if (archivedIssue != null)
+            {
+                archivedIssue.IsDeleted = 0;
+                issueRepo.Update(archivedIssue);
+                UnitOfWork.Complete();
+
+                lblMessage.Text = $"Issue #{issueId} was successfully restored to active status.";
+                lblMessage.Visible = true;
+
+                BindArchiveGrid();
+                upArchive.Update();
+            }
+        }
+
+        /// <summary>
+        /// Handles pagination page index changes.
+        /// </summary>
         protected void gvArchive_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             gvArchive.PageIndex = e.NewPageIndex;
-            BindGrid(txtSearch.Text, ddlSearchBy.SelectedValue);
+            BindArchiveGrid();
         }
     }
 }

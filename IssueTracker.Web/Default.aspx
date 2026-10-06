@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title>Issue Tracker</title>
+    <title>Issue Tracker - Active Issues</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 
@@ -26,9 +26,9 @@
             margin: 0 2px;
         }
 
-        .pagination-container td a:hover {
-            background-color: #e9ecef;
-        }
+            .pagination-container td a:hover {
+                background-color: #e9ecef;
+            }
     </style>
 </head>
 <body class="bg-light">
@@ -37,41 +37,47 @@
 
         <div class="container my-4">
 
-            <!-- Header & Add Button -->
+            <!-- Navigation Links & Header -->
+            <!-- Header & Navigation -->
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 class="fw-bold text-primary mb-0">Issue Tracker</h3>
+                <div>
+                    <h3 class="fw-bold text-primary mb-1">Issue Tracker</h3>
+                    <a href="Archive.aspx" class="btn btn-sm btn-outline-secondary">Archived Issues &rarr;</a>
+                </div>
                 <button type="button" class="btn btn-primary" onclick="openModalForNew();">
                     + Add New Issue
                 </button>
             </div>
 
-            <!-- Search Section -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <h5 class="card-title fw-bold mb-3">Search Issues</h5>
-                    <div class="row g-2 align-items-center">
-                        <div class="col-md-3">
-                            <asp:DropDownList ID="ddlSearchBy" runat="server" CssClass="form-select">
-                                <asp:ListItem Text="Search All Fields" Value="All" />
-                                <asp:ListItem Text="Title" Value="Title" />
-                                <asp:ListItem Text="Priority" Value="Priority" />
-                                <asp:ListItem Text="Assigned To" Value="AssignedTo" />
-                            </asp:DropDownList>
-                        </div>
-                        <div class="col-md-6">
-                            <asp:TextBox ID="txtSearch" runat="server" CssClass="form-control" placeholder="Type keyword to search..."></asp:TextBox>
-                        </div>
-                        <div class="col-md-3 d-flex gap-2">
-                            <asp:Button ID="btnSearch" runat="server" Text="Search" CssClass="btn btn-outline-primary w-100" OnClick="btnSearch_Click" />
-                            <asp:Button ID="btnClear" runat="server" Text="Clear" CssClass="btn btn-outline-secondary w-100" OnClick="btnClear_Click" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- GridView Section Inside UpdatePanel -->
+            <!-- UpdatePanel Enclosing Search and Grid -->
             <asp:UpdatePanel ID="upGrid" runat="server" UpdateMode="Conditional">
                 <ContentTemplate>
+
+                    <!-- Search Section (Now Inside UpdatePanel) -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold mb-3">Search Issues</h5>
+                            <div class="row g-2 align-items-center">
+                                <div class="col-md-3">
+                                    <asp:DropDownList ID="ddlSearchBy" runat="server" CssClass="form-select">
+                                        <asp:ListItem Text="Search All Fields" Value="All" />
+                                        <asp:ListItem Text="Title" Value="Title" />
+                                        <asp:ListItem Text="Priority" Value="Priority" />
+                                        <asp:ListItem Text="Assigned To" Value="AssignedTo" />
+                                    </asp:DropDownList>
+                                </div>
+                                <div class="col-md-6">
+                                    <asp:TextBox ID="txtSearch" runat="server" CssClass="form-control" placeholder="Type keyword to search..."></asp:TextBox>
+                                </div>
+                                <div class="col-md-3 d-flex gap-2">
+                                    <asp:Button ID="btnSearch" runat="server" Text="Search" CssClass="btn btn-outline-primary w-100" OnClick="btnSearch_Click" />
+                                    <asp:Button ID="btnClear" runat="server" Text="Clear" CssClass="btn btn-outline-secondary w-100" OnClick="btnClear_Click" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GridView Section -->
                     <div class="card shadow-sm">
                         <div class="card-header bg-dark text-white">
                             <h5 class="mb-0 fw-bold">Active Issues</h5>
@@ -119,12 +125,13 @@
                             </div>
                         </div>
                     </div>
+
                 </ContentTemplate>
             </asp:UpdatePanel>
 
         </div>
 
-        <!-- Bootstrap 5 Modal Container (Outer element is NOT inside UpdatePanel) -->
+        <!-- Bootstrap 5 Modal Container -->
         <div class="modal fade" id="addEditModal" tabindex="-1" aria-labelledby="addEditModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content">
@@ -181,70 +188,8 @@
 
     </form>
 
-    <!-- Bootstrap 5 JS -->
+    <!-- External Bootstrap 5 JS & Extracted Issue Tracker Script -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script type="text/javascript">
-        function openModal() {
-            var modalEl = document.getElementById('addEditModal');
-            var myModal = bootstrap.Modal.getOrCreateInstance(modalEl);
-            myModal.show();
-        }
-
-        function closeModal() {
-            var modalEl = document.getElementById('addEditModal');
-            var myModal = bootstrap.Modal.getInstance(modalEl);
-            if (myModal) {
-                myModal.hide();
-            }
-            cleanupBackdrop();
-        }
-
-        function openModalForNew() {
-            clearForm();
-            openModal();
-        }
-
-        function clearForm() {
-            document.getElementById('<%= hfIssueID.ClientID %>').value = '';
-            document.getElementById('<%= txtTitle.ClientID %>').value = '';
-            document.getElementById('<%= txtDescription.ClientID %>').value = '';
-            document.getElementById('<%= ddlPriority.ClientID %>').value = '';
-            document.getElementById('<%= txtAssignedTo.ClientID %>').value = '';
-
-            var errLabel = document.getElementById('<%= lblModalError.ClientID %>');
-            if (errLabel) {
-                errLabel.style.display = 'none';
-            }
-        }
-
-        function cleanupBackdrop() {
-            setTimeout(function () {
-                document.querySelectorAll('.modal-backdrop').forEach(function (el) {
-                    el.remove();
-                });
-                document.body.classList.remove('modal-open');
-                document.body.style.overflow = '';
-                document.body.style.paddingRight = '';
-            }, 150);
-        }
-
-        // Automatic cleanup listeners
-        document.addEventListener('DOMContentLoaded', function () {
-            var modalEl = document.getElementById('addEditModal');
-            if (modalEl) {
-                modalEl.addEventListener('hidden.bs.modal', cleanupBackdrop);
-            }
-        });
-
-        if (typeof Sys !== 'undefined' && Sys.WebForms && Sys.WebForms.PageRequestManager) {
-            Sys.WebForms.PageRequestManager.getInstance().add_endRequest(function () {
-                var modalEl = document.getElementById('addEditModal');
-                if (modalEl) {
-                    modalEl.addEventListener('hidden.bs.modal', cleanupBackdrop);
-                }
-            });
-        }
-    </script>
+    <script src="Scripts/issue-tracker.js" type="text/javascript"></script>
 </body>
 </html>

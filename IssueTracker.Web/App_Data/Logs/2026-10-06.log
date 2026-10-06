@@ -1,0 +1,110 @@
+2026-10-06 20:25:30.8375 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully with Autofac DI.
+
+--------------------------------------------------
+
+2026-10-06 20:51:03.8709 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully with Autofac DI.
+
+--------------------------------------------------
+
+2026-10-06 20:59:29.8162 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully with Autofac DI.
+
+--------------------------------------------------
+
+2026-10-06 21:01:23.4921 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully with Autofac DI.
+
+--------------------------------------------------
+
+2026-10-06 21:08:11.5348 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully with Autofac DI.
+
+--------------------------------------------------
+
+2026-10-06 21:12:26.6412 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully with Autofac DI.
+
+--------------------------------------------------
+
+2026-10-06 21:16:58.8284 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully with Autofac DI.
+
+--------------------------------------------------
+
+2026-10-06 21:21:48.4189 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully with Autofac DI.
+
+--------------------------------------------------
+
+2026-10-06 21:24:59.3611 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully with Autofac DI.
+
+--------------------------------------------------
+
+2026-10-06 21:31:04.5305 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully with Autofac DI.
+
+--------------------------------------------------
+
+2026-10-06 21:40:00.3396 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully with Autofac DI.
+
+--------------------------------------------------
+
+2026-10-06 21:44:34.0000 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully with Autofac DI.
+
+--------------------------------------------------
+
+2026-10-06 21:50:00.9897 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully with Autofac DI.
+
+--------------------------------------------------
+
+2026-10-06 22:00:02.1727 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully with Autofac DI.
+
+--------------------------------------------------
+
+2026-10-06 22:06:14.4764 | INFO | IssueTracker.Web.Global | IssueTracker Application Started successfully with Autofac DI.
+
+--------------------------------------------------
+
+2026-10-06 22:06:15.2358 | ERROR | IssueTracker.Web.Global | Unhandled Exception caught in Application_Error
+System.InvalidOperationException: IContainerProviderAccessor.ContainerProvider returned null, which is invalid. If the container provider belongs to the HttpApplication subclass, ensure that it is a static variable.
+   at Autofac.Integration.Web.Forms.DependencyInjectionModule.OnPreRequestHandlerExecute(Object sender, EventArgs e)
+   at System.Web.HttpApplication.SyncEventExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute()
+   at System.Web.HttpApplication.ExecuteStepImpl(IExecutionStep step)
+   at System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean& completedSynchronously)
+--------------------------------------------------
+
+2026-10-06 22:06:15.2562 | ERROR | IssueTracker.Web.Global | Unhandled Exception caught in Application_Error
+System.InvalidOperationException: IContainerProviderAccessor.ContainerProvider returned null, which is invalid. If the container provider belongs to the HttpApplication subclass, ensure that it is a static variable.
+   at Autofac.Integration.Web.Forms.DependencyInjectionModule.OnPreRequestHandlerExecute(Object sender, EventArgs e)
+   at System.Web.HttpApplication.SyncEventExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute()
+   at System.Web.HttpApplication.ExecuteStepImpl(IExecutionStep step)
+   at System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean& completedSynchronously)
+--------------------------------------------------
+
+2026-10-06 22:12:46.7854 | ERROR | IssueTracker.Web.Global | Unhandled Exception caught in Application_Error
+System.InvalidOperationException: The entity type Issue is not part of the model for the current context.
+   at System.Data.Entity.Internal.InternalContext.UpdateEntitySetMappingsForType(Type entityType)
+   at System.Data.Entity.Internal.InternalContext.GetEntitySetAndBaseTypeForType(Type entityType)
+   at System.Data.Entity.Internal.Linq.InternalSet`1.Initialize()
+   at System.Data.Entity.Internal.Linq.InternalSet`1.get_InternalContext()
+   at System.Data.Entity.Infrastructure.DbQuery`1.System.Linq.IQueryable.get_Provider()
+   at System.Linq.Queryable.Where[TSource](IQueryable`1 source, Expression`1 predicate)
+   at IssueTracker.Data.Repository`1.Find(Expression`1 predicate) in C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Data\Repositories\Repository.cs:line 72
+   at IssueTracker.Web.Default.BindGrid() in C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\Default.aspx.cs:line 56
+   at IssueTracker.Web.Default.Page_Load(Object sender, EventArgs e) in C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\Default.aspx.cs:line 42
+   at System.Web.UI.Control.OnLoad(EventArgs e)
+   at System.Web.UI.Control.LoadRecursive()
+   at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)
+--------------------------------------------------
+
+2026-10-06 22:17:07.0746 | ERROR | IssueTracker.Web.Global | Unhandled Exception caught in Application_Error
+System.InvalidOperationException: The entity type Issue is not part of the model for the current context.
+   at System.Data.Entity.Internal.InternalContext.UpdateEntitySetMappingsForType(Type entityType)
+   at System.Data.Entity.Internal.InternalContext.GetEntitySetAndBaseTypeForType(Type entityType)
+   at System.Data.Entity.Internal.Linq.InternalSet`1.Initialize()
+   at System.Data.Entity.Internal.Linq.InternalSet`1.GetEnumerator()
+   at System.Linq.Enumerable.WhereEnumerableIterator`1.MoveNext()
+   at System.Linq.Buffer`1..ctor(IEnumerable`1 source)
+   at System.Linq.OrderedEnumerable`1.<GetEnumerator>d__1.MoveNext()
+   at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   at IssueTracker.Web.Default.BindGrid() in C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\Default.aspx.cs:line 67
+   at IssueTracker.Web.Default.Page_Load(Object sender, EventArgs e) in C:\Users\ksahoo\source\repos\IssueTrackerVascor\IssueTracker.Web\Default.aspx.cs:line 42
+   at System.Web.UI.Control.OnLoad(EventArgs e)
+   at System.Web.UI.Control.LoadRecursive()
+   at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)
+--------------------------------------------------
+

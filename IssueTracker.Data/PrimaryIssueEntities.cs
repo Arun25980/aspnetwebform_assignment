@@ -1,5 +1,5 @@
 ﻿using System.Data.Entity;
-using IssueTracker.Core.Entities;
+using IssueTracker.Core.Entities; // Explicitly import Core Entities
 
 namespace IssueTracker.Data
 {
@@ -7,11 +7,19 @@ namespace IssueTracker.Data
     {
         public PrimaryIssueEntities() : base("name=PrimaryIssueEntities")
         {
-            // Disables Code First migrations since table is already defined in LocalDB .mdf
             Database.SetInitializer<PrimaryIssueEntities>(null);
             this.Configuration.ValidateOnSaveEnabled = false;
         }
 
+        // Must match IssueTracker.Core.Entities.Issue
         public DbSet<Issue> Issues { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Force explicit EF model registration for Issue entity
+            modelBuilder.Entity<Issue>().ToTable("Issues");
+        }
     }
 }

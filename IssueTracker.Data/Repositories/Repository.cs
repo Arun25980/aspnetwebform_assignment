@@ -1,75 +1,107 @@
-﻿using IssueTracker.Core.Entities;
-using IssueTracker.Core.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
+using IssueTracker.Core.Interfaces;
 
-namespace IssueTracker.Data.Repositories
+namespace IssueTracker.Data
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
         protected readonly DbContext Context;
-        protected readonly DbSet<TEntity> DbSet;
 
         public Repository(DbContext context)
         {
             Context = context ?? throw new ArgumentNullException(nameof(context));
-            DbSet = Context.Set<TEntity>();
+        }
+
+        protected virtual DbSet<TEntity> DbSet => Context.Set<TEntity>();
+
+        public virtual IQueryable<TEntity> GetAll()
+        {
+            return Context.Set<TEntity>();
+        }
+
+        public virtual IQueryable<TEntity> GetPaged<TKey>(
+            Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, TKey>> orderBy,
+            bool descending,
+            int pageIndex,
+            int pageSize,
+            out int totalCount)
+        {
+            // Use IQueryable throughout so the underlying EF provider can translate
+            // the expression to SQL and the model/type mapping is validated by EF.
+            var queryable = Context.Set<TEntity>().Where(predicate);
+
+            totalCount = queryable.Count();
+
+            var ordered = descending ? queryable.OrderByDescending(orderBy) : queryable.OrderBy(orderBy);
+
+            return ordered.Skip(pageIndex * pageSize).Take(pageSize);
+        }
+
+        /// <summary>
+        /// Finds entities matching the predicate without triggering EF Metadata Workspace errors.
+        /// </summary>
+        public virtual IQueryable<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
+        {
+            // Return an IQueryable so EF can translate the expression tree to SQL.
+            // Avoid compiling the predicate and pulling data into memory which
+            // can mask model/CLR type mismatches and causes inefficient queries.
+            return Context.Set<TEntity>().Where(predicate);
         }
 
         public virtual TEntity GetById(object id)
         {
-            return DbSet.Find(id);
-        }
-
-        public virtual IEnumerable<TEntity> GetAll()
-        {
-            return DbSet.ToList();
-        }
-
-        public virtual IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
-        {
-            return Queryable.Where(DbSet, predicate).ToList();
+            return Context.Set<TEntity>().Find(id);
         }
 
         public virtual void Add(TEntity entity)
         {
-            // Simply stage the entity in memory — UnitOfWork handles SaveChanges() and validation catching
-            DbSet.Add(entity);
+            Context.Set<TEntity>().Add(entity);
         }
 
         public virtual void Update(TEntity entity)
         {
-            // Mark entity as Modified in memory — UnitOfWork handles SaveChanges()
-            DbSet.Attach(entity);
-            Context.Entry(entity).State = EntityState.Modified;
+            var entry = Context.Entry(entity);
+            if (entry.State == EntityState.Detached)
+            {
+                Context.Set<TEntity>().Attach(entity);
+                entry.State = EntityState.Modified;
+            }
+        }
+
+        public virtual void Remove(TEntity entity)
+        {
+            Context.Set<TEntity>().Remove(entity);
         }
 
         public virtual void SoftDelete(object id)
         {
             var entity = GetById(id);
-            if (entity == null) return;
-
-            if (entity is IBaseEntity softDeletable)
+            if (entity != null)
             {
-                softDeletable.IsDeleted = 1;
-                Update(entity);
-            }
-            else
-            {
-                // Reflection fallback to check for IsDeleted property
                 var prop = entity.GetType().GetProperty("IsDeleted");
                 if (prop != null && prop.CanWrite)
                 {
-                    prop.SetValue(entity, 1);
+                    var targetType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+
+                    if (targetType == typeof(bool))
+                    {
+                        prop.SetValue(entity, true);
+                    }
+                    else if (targetType == typeof(int) || targetType == typeof(byte) || targetType == typeof(short))
+                    {
+                        prop.SetValue(entity, Convert.ChangeType(1, targetType));
+                    }
+
                     Update(entity);
                 }
                 else
                 {
-                    // Fallback to hard delete if entity is not soft-deletable
-                    DbSet.Remove(entity);
+                    Remove(entity);
                 }
             }
         }

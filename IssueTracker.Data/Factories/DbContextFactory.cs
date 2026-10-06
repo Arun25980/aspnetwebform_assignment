@@ -11,8 +11,7 @@ namespace IssueTracker.Data.Factories
             {
                 case "primary":
                     return new PrimaryIssueEntities(); // Direct EDMX Context 1
-                case "archive":
-                    return new ArchiveIssueEntities(); // Direct EDMX Context 2
+              
                 default:
                     throw new ArgumentException("Unknown DbContext key specified.");
             }
