@@ -33,7 +33,6 @@
 					<Property Name="IssueID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
 					<Property Name="Title" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
 					<Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-					<Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
 					<Property Name="Priority" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
 					<Property Name="AssignedTo" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
 					<Property Name="IsDeleted" Type="Int32" Nullable="false" />
@@ -55,7 +54,6 @@
 								<ScalarProperty Name="IssueID" ColumnName="Id" />
 								<ScalarProperty Name="Title" ColumnName="Title" />
 								<ScalarProperty Name="Description" ColumnName="Description" />
-								<ScalarProperty Name="Status" ColumnName="Status" />
 								<ScalarProperty Name="Priority" ColumnName="Priority" />
 								<ScalarProperty Name="AssignedTo" ColumnName="AssignedTo" />
 								<ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
